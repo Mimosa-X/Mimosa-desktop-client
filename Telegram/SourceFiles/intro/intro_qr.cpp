@@ -30,6 +30,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/unixtime.h"
 #include "qr/qr_generate.h"
 #include "platform/platform_webauthn.h"
+#include "core/branding.h"
 #include "styles/style_intro.h"
 
 namespace Intro {
@@ -530,10 +531,19 @@ QImage TelegramLogoImage() {
 	{
 		auto p = QPainter(&result);
 		auto hq = PainterHighQualityEnabler(p);
-		p.setBrush(QrActiveColor());
-		p.setPen(Qt::NoPen);
-		p.drawEllipse(QRect(QPoint(), size));
-		st::introQrPlane.paintInCenter(p, QRect(QPoint(), size));
+		const auto logo = QImage(u":/gui/art/logo_qr_big.png"_q);
+		if (!logo.isNull()) {
+			const auto logoSize = size.width() * 0.95;
+			auto scaled = logo.scaled(
+				logoSize * style::DevicePixelRatio(),
+				logoSize * style::DevicePixelRatio(),
+				Qt::KeepAspectRatio,
+				Qt::SmoothTransformation);
+			scaled.setDevicePixelRatio(style::DevicePixelRatio());
+			const auto logoLeft = (size.width() - logoSize) / 2;
+			const auto logoTop = (size.height() - logoSize) / 2;
+			p.drawImage(logoLeft, logoTop, scaled);
+		}
 	}
 	return result;
 }
