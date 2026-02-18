@@ -1,0 +1,35 @@
+/*
+This file is part of Telegram Desktop,
+the official desktop application for the Telegram messaging service.
+
+For license and copyright information please follow this link:
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+*/
+#pragma once
+
+#include "base/const_string.h"
+
+namespace Branding {
+
+constexpr auto AppName = "Telegram Desktop"_cs;
+constexpr auto ShortAppName = "Telegram"_cs;
+constexpr auto ApplicationName = "TelegramDesktop"_cs;
+constexpr auto CompanyName = "Telegram FZ-LLC"_cs;
+
+constexpr auto WindowsIconPath = "Resources/art/icon256.ico"_cs;
+constexpr auto MacOSIconName = "Icon.icns"_cs;
+constexpr auto LinuxIconBase = "Resources/art/icon"_cs;
+
+constexpr auto LogoPath = ":/gui/art/logo_256.png"_cs;
+constexpr auto LogoNoMarginPath = ":/gui/art/logo_256_no_margin.png"_cs;
+constexpr auto PlaneWhitePath = ":/gui/plane_white.svg"_cs;
+constexpr auto BusinessLogoPath = ":/gui/art/business_logo.png"_cs;
+constexpr auto AffiliateLogoPath = ":/gui/art/affiliate_logo.png"_cs;
+
+constexpr auto TrayMonochromePath = ":/gui/icons/tray/monochrome.svg"_cs;
+constexpr auto TrayMonochromeAttentionPath = ":/gui/icons/tray/monochrome_attention.svg"_cs;
+constexpr auto TrayMonochromeMutePath = ":/gui/icons/tray/monochrome_mute.svg"_cs;
+
+constexpr auto BundleIdentifier = "org.telegram.desktop"_cs;
+
+} // namespace Branding

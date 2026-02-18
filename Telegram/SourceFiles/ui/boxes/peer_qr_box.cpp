@@ -8,6 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ui/boxes/peer_qr_box.h"
 
 #include "core/application.h"
+#include "core/branding.h"
 #include "data/data_cloud_themes.h"
 #include "data/data_peer.h"
 #include "data/data_session.h"
@@ -87,7 +88,7 @@ using Colors = std::vector<QColor>;
 	{
 		auto p = QPainter(&qr);
 		auto hq = PainterHighQualityEnabler(p);
-		auto svg = QSvgRenderer(u":/gui/plane_white.svg"_q);
+		auto svg = QSvgRenderer(Branding::PlaneWhitePath.utf16());
 		const auto size = qr.rect().size();
 		const auto centerRect = Rect(size)
 			- Margins((size.width() - (size.width() * kCenterRatio)) / 2);

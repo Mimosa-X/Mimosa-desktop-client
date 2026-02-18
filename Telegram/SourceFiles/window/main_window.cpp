@@ -21,6 +21,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "main/main_account.h" // Account::sessionValue.
 #include "main/main_domain.h"
 #include "core/application.h"
+#include "core/branding.h"
 #include "core/sandbox.h"
 #include "core/shortcuts.h"
 #include "lang/lang_keys.h"
@@ -116,12 +117,12 @@ const char kOptionNewWindowsSizeAsFirst[] = "new-windows-size-as-first";
 const char kOptionDisableTouchbar[] = "touchbar-disabled";
 
 const QImage &Logo() {
-	static const auto result = QImage(u":/gui/art/logo_256.png"_q);
+	static const auto result = QImage(Branding::LogoPath.utf16());
 	return result;
 }
 
 const QImage &LogoNoMargin() {
-	static const auto result = QImage(u":/gui/art/logo_256_no_margin.png"_q);
+	static const auto result = QImage(Branding::LogoNoMarginPath.utf16());
 	return result;
 }
 

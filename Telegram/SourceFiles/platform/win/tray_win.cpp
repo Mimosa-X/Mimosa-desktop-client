@@ -10,6 +10,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/invoke_queued.h"
 #include "base/qt_signal_producer.h"
 #include "core/application.h"
+#include "core/branding.h"
 #include "lang/lang_keys.h"
 #include "main/main_session.h"
 #include "storage/localstorage.h"
@@ -78,7 +79,7 @@ bool DarkTasbarValueValid/* = false*/;
 	Expects(size > 0);
 
 	static const auto Content = [&] {
-		auto f = QFile(u":/gui/icons/tray/monochrome.svg"_q);
+		auto f = QFile(Branding::TrayMonochromePath.utf16());
 		return f.open(QIODevice::ReadOnly) ? f.readAll() : QByteArray();
 	}();
 	static auto Mask = QImage();

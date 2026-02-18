@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "ui/effects/premium_top_bar.h"
 
+#include "core/branding.h"
 #include "lottie/lottie_icon.h"
 #include "ui/color_contrast.h"
 #include "ui/painter.h"
@@ -144,11 +145,11 @@ TopBar::TopBar(
 		TopBarAbstract::computeIsDark();
 
 		if (_logo == u"dollar"_q) {
-			_dollar = ScaleTo(QImage(u":/gui/art/business_logo.png"_q));
+			_dollar = ScaleTo(QImage(Branding::BusinessLogoPath.utf16()));
 			_ministars.setColorOverride(
 				QGradientStops{{ 0, st::premiumButtonFg->c }});
 		} else if (_logo == u"affiliate"_q) {
-			_dollar = ScaleTo(QImage(u":/gui/art/affiliate_logo.png"_q));
+			_dollar = ScaleTo(QImage(Branding::AffiliateLogoPath.utf16()));
 			_ministars.setColorOverride(descriptor.gradientStops);
 		} else if (_logo == u"diamond"_q) {
 			_lottie = Lottie::MakeIcon({
