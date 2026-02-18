@@ -470,7 +470,7 @@ void Step::paintCover(QPainter &p, int top) {
 	st::introCoverRight.paint(p, width() - right - st::introCoverRight.width(), coverHeight - st::introCoverRight.height(), width());
 
 	if (hasCover()) {
-		const auto logoSize = 120;
+		const auto logoSize = 200;
 		const auto logoLeft = (width() - logoSize) / 2;
 		const auto logoTop = top + st::introCoverIconTop;
 		const auto logo = QImage(Branding::LogoPath.utf16());
