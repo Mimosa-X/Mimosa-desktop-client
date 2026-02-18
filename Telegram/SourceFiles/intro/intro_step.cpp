@@ -36,6 +36,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_session.h"
 #include "data/data_chat_filters.h"
 #include "window/window_controller.h"
+#include "core/branding.h"
 #include "styles/style_intro.h"
 #include "styles/style_window.h"
 
@@ -468,15 +469,29 @@ void Step::paintCover(QPainter &p, int top) {
 	st::introCoverLeft.paint(p, left, coverHeight - st::introCoverLeft.height(), width());
 	st::introCoverRight.paint(p, width() - right - st::introCoverRight.width(), coverHeight - st::introCoverRight.height(), width());
 
-	auto planeLeft = (width() - st::introCoverIcon.width()) / 2 - st::introCoverIconLeft;
-	auto planeTop = top + st::introCoverIconTop;
-	if (top < 0 && !_hasCover) {
-		auto deltaLeft = -qRound(float64(st::introPlaneWidth / st::introPlaneHeight) * top);
-//		auto deltaTop = top;
-		planeLeft += deltaLeft;
-	//	planeTop += top;
+	if (hasCover()) {
+		const auto logoSize = 120;
+		const auto logoLeft = (width() - logoSize) / 2;
+		const auto logoTop = top + st::introCoverIconTop;
+		const auto logo = QImage(Branding::LogoPath.utf16());
+		if (!logo.isNull()) {
+			auto scaled = logo.scaled(
+				logoSize * style::DevicePixelRatio(),
+				logoSize * style::DevicePixelRatio(),
+				Qt::KeepAspectRatio,
+				Qt::SmoothTransformation);
+			scaled.setDevicePixelRatio(style::DevicePixelRatio());
+			p.drawImage(logoLeft, logoTop, scaled);
+		}
+	} else {
+		auto planeLeft = (width() - st::introCoverIcon.width()) / 2 - st::introCoverIconLeft;
+		auto planeTop = top + st::introCoverIconTop;
+		if (top < 0) {
+			auto deltaLeft = -qRound(float64(st::introPlaneWidth / st::introPlaneHeight) * top);
+			planeLeft += deltaLeft;
+		}
+		st::introCoverIcon.paint(p, planeLeft, planeTop, width());
 	}
-	st::introCoverIcon.paint(p, planeLeft, planeTop, width());
 }
 
 int Step::contentLeft() const {
