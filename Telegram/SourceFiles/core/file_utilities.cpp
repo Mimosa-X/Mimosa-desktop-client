@@ -12,6 +12,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "base/platform/base_platform_file_utilities.h"
 #include "platform/platform_file_utilities.h"
 #include "core/application.h"
+#include "core/branding.h"
 #include "base/unixtime.h"
 #include "ui/delayed_activation.h"
 #include "ui/chat/attach/attach_extensions.h"
@@ -163,7 +164,7 @@ void ShowInFolder(const QString &filepath) {
 
 QString DefaultDownloadPathFolder(not_null<Main::Session*> session) {
 #if OS_MAC_STORE
-	return u"Telegram Lite"_q;
+	return Branding::ShortAppName.utf16() + u" Lite"_q;
 #else // OS_MAC_STORE
 	return session->supportMode() ? u"Tsupport Desktop"_q : AppName.utf16();
 #endif // OS_MAC_STORE

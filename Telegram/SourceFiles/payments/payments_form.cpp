@@ -19,6 +19,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "history/history_item.h"
 #include "history/history_item_components.h"
 #include "stripe/stripe_api_client.h"
+#include "core/branding.h"
 #include "stripe/stripe_error.h"
 #include "stripe/stripe_token.h"
 #include "stripe/stripe_card_validator.h"
@@ -1189,7 +1190,7 @@ void Form::validateCard(
 	}
 	auto configuration = Stripe::PaymentConfiguration{
 		.publishableKey = method.publishableKey,
-		.companyName = "Telegram",
+		.companyName = Branding::CompanyName.utf8(),
 	};
 	_stripe = std::make_unique<Stripe::APIClient>(std::move(configuration));
 	auto card = Stripe::CardParams{

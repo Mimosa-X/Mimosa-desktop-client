@@ -9,6 +9,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #include "data/data_session.h"
 #include "core/application.h"
+#include "core/branding.h"
 #include "core/sandbox.h"
 #include "main/main_session.h"
 #include "history/history_widget.h"
@@ -365,7 +366,7 @@ void MainWindow::createGlobalMenu() {
 		}
 	};
 
-	auto main = psMainMenu.addMenu(u"Telegram"_q);
+	auto main = psMainMenu.addMenu(Branding::ShortAppName.utf16());
 	{
 		auto callback = [=] {
 			ensureWindowShown();
@@ -375,7 +376,7 @@ void MainWindow::createGlobalMenu() {
 			tr::lng_mac_menu_about_telegram(
 				tr::now,
 				lt_telegram,
-				u"Telegram"_q),
+				Branding::ShortAppName.utf16()),
 			std::move(callback))
 		->setMenuRole(QAction::AboutQtRole);
 	}

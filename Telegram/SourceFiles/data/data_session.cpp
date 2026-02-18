@@ -18,6 +18,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "api/api_user_names.h"
 #include "chat_helpers/stickers_lottie.h"
 #include "core/application.h"
+#include "core/branding.h"
 #include "core/core_settings.h"
 #include "core/mime_type.h" // Core::IsMimeSticker
 #include "ui/image/image_location_factory.h" // Images::FromPhotoSize
@@ -5058,7 +5059,7 @@ void Session::serviceNotification(
 				| MTPDuser::Flag::f_verified),
 			MTP_long(peerToUser(PeerData::kServiceNotificationsId).bare),
 			MTPlong(), // access_hash
-			MTP_string("Telegram"),
+			MTP_string(Branding::ShortAppName.utf8().constData()),
 			MTPstring(), // last_name
 			MTPstring(), // username
 			MTP_string("42777"),
