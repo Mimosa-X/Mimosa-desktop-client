@@ -67,3 +67,6 @@ settings.local.json
 
 # AI work folder (session-specific, not for version control)
 .ai
+
+# Windows nul files (created by shell redirection)
+nul
