@@ -74,12 +74,11 @@ def main():
     
     art_dir.mkdir(exist_ok=True)
     
-    logo_1000 = icons_dir / 'logo_1000_1000.png'
-    logo_500 = icons_dir / 'logo_500_500.png'
+    logo_1024 = icons_dir / 'logo_1024.png'
     tray_svg = icons_dir / 'tray_monochrome.svg'
     
-    if not logo_1000.exists():
-        print(f"Error: {logo_1000} not found")
+    if not logo_1024.exists():
+        print(f"Error: {logo_1024} not found")
         return 1
     
     if not tray_svg.exists():
@@ -88,10 +87,10 @@ def main():
     
     print("Generating PNG icons...")
     
-    resize_png(logo_1000, art_dir / 'logo_256.png', (256, 256))
-    resize_png(logo_1000, art_dir / 'logo_256_no_margin.png', (256, 256))
-    resize_png(logo_1000, art_dir / 'business_logo.png', (256, 256))
-    resize_png(logo_1000, art_dir / 'affiliate_logo.png', (256, 256))
+    resize_png(logo_1024, art_dir / 'logo_256.png', (256, 256))
+    resize_png(logo_1024, art_dir / 'logo_256_no_margin.png', (256, 256))
+    resize_png(logo_1024, art_dir / 'business_logo.png', (256, 256))
+    resize_png(logo_1024, art_dir / 'affiliate_logo.png', (256, 256))
     
     print("\nGenerating Linux icons...")
     linux_sizes = [
@@ -105,11 +104,11 @@ def main():
     ]
     
     for size1x, size1y, size2x, size2y in linux_sizes:
-        resize_png(logo_1000, art_dir / f'icon{size1x}.png', (size1x, size1y))
-        resize_png(logo_1000, art_dir / f'icon{size1x}@2x.png', (size2x, size2y))
+        resize_png(logo_1024, art_dir / f'icon{size1x}.png', (size1x, size1y))
+        resize_png(logo_1024, art_dir / f'icon{size1x}@2x.png', (size2x, size2y))
     
     print("\nGenerating ICO file...")
-    create_ico(logo_1000, art_dir / 'icon256.ico')
+    create_ico(logo_1024, art_dir / 'icon256.ico')
     
     print("\nGenerating SVG variants...")
     create_svg_variant(tray_svg, icons_dir / 'plane_white.svg', fill_color='#ffffff')
