@@ -8,6 +8,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "updater.h"
 
 #include "base/platform/win/base_windows_safe_library.h"
+#include "core/branding.h"
+#include <QtCore/QString>
+#include <string>
 
 bool _debug = false;
 
@@ -307,11 +310,15 @@ void updateRegistry() {
 								SYSTEMTIME stLocalTime;
 								GetLocalTime(&stLocalTime);
 								RegSetValueEx(rkey, L"DisplayVersion", 0, REG_SZ, (const BYTE*)versionStr, ((versionLen / 2) + 1) * sizeof(WCHAR));
-								wsprintf(nameStr, L"Telegram Desktop");
-								RegSetValueEx(rkey, L"DisplayName", 0, REG_SZ, (const BYTE*)nameStr, (wcslen(nameStr) + 1) * sizeof(WCHAR));
-								wsprintf(publisherStr, L"Telegram FZ-LLC");
-								RegSetValueEx(rkey, L"Publisher", 0, REG_SZ, (const BYTE*)publisherStr, (wcslen(publisherStr) + 1) * sizeof(WCHAR));
-								wsprintf(icongroupStr, L"Telegram Desktop");
+								{
+									auto appName = QString::fromUtf8(Branding::AppName.utf8());
+									auto companyName = QString::fromUtf8(Branding::CompanyName.utf8());
+									wcscpy(nameStr, appName.toStdWString().c_str());
+									RegSetValueEx(rkey, L"DisplayName", 0, REG_SZ, (const BYTE*)nameStr, (wcslen(nameStr) + 1) * sizeof(WCHAR));
+									wcscpy(publisherStr, companyName.toStdWString().c_str());
+									RegSetValueEx(rkey, L"Publisher", 0, REG_SZ, (const BYTE*)publisherStr, (wcslen(publisherStr) + 1) * sizeof(WCHAR));
+									wcscpy(icongroupStr, appName.toStdWString().c_str());
+								}
 								RegSetValueEx(rkey, L"Inno Setup: Icon Group", 0, REG_SZ, (const BYTE*)icongroupStr, (wcslen(icongroupStr) + 1) * sizeof(WCHAR));
 								wsprintf(dateStr, L"%04d%02d%02d", stLocalTime.wYear, stLocalTime.wMonth, stLocalTime.wDay);
 								RegSetValueEx(rkey, L"InstallDate", 0, REG_SZ, (const BYTE*)dateStr, (wcslen(dateStr) + 1) * sizeof(WCHAR));
@@ -491,7 +498,11 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdPara
 	return 0;
 }
 
-static const WCHAR *_programName = L"Telegram Desktop"; // folder in APPDATA, if current path is unavailable for writing
+// folder in APPDATA, if current path is unavailable for writing
+static const WCHAR *_programName = []() -> const WCHAR* {
+	static std::wstring name = QString::fromUtf8(Branding::AppName.utf8()).toStdWString();
+	return name.c_str();
+}();
 static const WCHAR *_exeName = L"Updater.exe";
 
 LPTOP_LEVEL_EXCEPTION_FILTER _oldWndExceptionFilter = 0;

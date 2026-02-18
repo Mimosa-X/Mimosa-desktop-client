@@ -9,6 +9,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #include "base/platform/base_platform_info.h"
 #include "core/application.h"
+#include "core/branding.h"
 #include "core/file_utilities.h"
 #include "core/update_checker.h"
 #include "lang/lang_keys.h"
@@ -63,7 +64,7 @@ rpl::producer<TextWithEntities> Text3() {
 } // namespace
 
 void AboutBox(not_null<Ui::GenericBox*> box) {
-	box->setTitle(rpl::single(u"Telegram Desktop"_q));
+	box->setTitle(rpl::single(Branding::AppName.utf16()));
 
 	auto layout = box->verticalLayout();
 

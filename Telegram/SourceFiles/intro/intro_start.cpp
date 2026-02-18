@@ -14,6 +14,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ui/widgets/labels.h"
 #include "main/main_account.h"
 #include "main/main_app_config.h"
+#include "core/branding.h"
 
 namespace Intro {
 namespace details {
@@ -24,7 +25,7 @@ StartWidget::StartWidget(
 	not_null<Data*> data)
 : Step(parent, account, data, true) {
 	setMouseTracking(true);
-	setTitleText(rpl::single(u"Telegram Desktop"_q));
+	setTitleText(rpl::single(Branding::AppName.utf16()));
 	setDescriptionText(tr::lng_intro_about());
 	show();
 }

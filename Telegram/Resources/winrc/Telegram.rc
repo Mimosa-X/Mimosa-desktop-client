@@ -61,11 +61,11 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             // NOTE: These values should match Branding::CompanyName and Branding::AppName in core/branding.h
-            VALUE "CompanyName", "Telegram FZ-LLC"
-            VALUE "FileDescription", "Telegram Desktop"
+            VALUE "CompanyName", "Owpengram"
+            VALUE "FileDescription", "Owpengram Desktop"
             VALUE "FileVersion", "6.5.1.0"
             VALUE "LegalCopyright", "Copyright (C) 2014-2026"
-            VALUE "ProductName", "Telegram Desktop"
+            VALUE "ProductName", "Owpengram Desktop"
             VALUE "ProductVersion", "6.5.1.0"
         END
     END

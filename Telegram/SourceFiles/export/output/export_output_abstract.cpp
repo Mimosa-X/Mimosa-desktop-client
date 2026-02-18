@@ -13,6 +13,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "export/output/export_output_stats.h"
 #include "export/output/export_output_result.h"
 
+#include "core/branding.h"
+
 #include <QtCore/QDir>
 #include <QtCore/QDate>
 
@@ -167,7 +169,7 @@ Stats AbstractWriter::produceTestExample(
 
 	auto sessions = Data::SessionsList();
 	auto session = Data::Session();
-	session.applicationName = "Telegram Desktop";
+	session.applicationName = Branding::AppName.utf8();
 	session.applicationVersion = "1.3.8";
 	session.country = "GB";
 	session.created = date();
