@@ -11,10 +11,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 namespace Branding {
 
-constexpr auto AppName = "Telegram Desktop"_cs;
-constexpr auto ShortAppName = "Telegram"_cs;
-constexpr auto ApplicationName = "TelegramDesktop"_cs;
-constexpr auto CompanyName = "Telegram FZ-LLC"_cs;
+constexpr auto AppName = "Owpengram Desktop"_cs;
+constexpr auto ShortAppName = "Owpengram"_cs;
+constexpr auto ApplicationName = "OwpengramDesktop"_cs;
+constexpr auto CompanyName = "Owpengram"_cs;
 
 constexpr auto WindowsIconPath = "Resources/art/icon256.ico"_cs;
 constexpr auto MacOSIconName = "Icon.icns"_cs;
@@ -30,6 +30,6 @@ constexpr auto TrayMonochromePath = ":/gui/icons/tray/monochrome.svg"_cs;
 constexpr auto TrayMonochromeAttentionPath = ":/gui/icons/tray/monochrome_attention.svg"_cs;
 constexpr auto TrayMonochromeMutePath = ":/gui/icons/tray/monochrome_mute.svg"_cs;
 
-constexpr auto BundleIdentifier = "org.telegram.desktop"_cs;
+constexpr auto BundleIdentifier = "org.owpengram.desktop"_cs;
 
 } // namespace Branding
