@@ -23,10 +23,10 @@ add_subdirectory(codegen)
 get_filename_component(src_loc SourceFiles REALPATH)
 get_filename_component(res_loc Resources REALPATH)
 
-set(branding_app_name "Owpengram Desktop")
-set(branding_short_app_name "Owpengram")
+set(branding_app_name "OwpenGram Desktop")
+set(branding_short_app_name "OwpenGram")
 set(branding_application_name "OwpengramDesktop")
-set(branding_company_name "Owpengram")
+set(branding_company_name "OwpenGram")
 set(branding_bundle_identifier "org.owpengram.desktop")
 
 include(cmake/telegram_options.cmake)
@@ -1980,7 +1980,7 @@ endif()
 if (build_macstore)
     set(bundle_identifier "org.owpengram.desktop")
     set(bundle_entitlements "Telegram Lite.entitlements")
-    set(output_name "Owpengram Lite")
+    set(output_name "OwpenGram Lite")
     target_link_options(Telegram
     PRIVATE
         -F${libs_loc}/breakpad/src/client/mac/build/Release
@@ -1996,12 +1996,12 @@ if (build_macstore)
     )
 else()
     if (CMAKE_GENERATOR STREQUAL Xcode)
-        set(bundle_identifier "com.owpengram.Owpengram$<$<CONFIG:Debug>:Debug>")
+        set(bundle_identifier "com.owpengram.OwpenGram$<$<CONFIG:Debug>:Debug>")
     else()
-        set(bundle_identifier "com.owpengram.Owpengram")
+        set(bundle_identifier "com.owpengram.OwpenGram")
     endif()
     set(bundle_entitlements "Telegram.entitlements")
-    set(output_name "Owpengram")
+    set(output_name "OwpenGram")
 endif()
 
 if (CMAKE_GENERATOR STREQUAL Xcode)
@@ -2040,7 +2040,7 @@ target_compile_definitions(Telegram
 PRIVATE
     TDESKTOP_API_ID=${TDESKTOP_API_ID}
     TDESKTOP_API_HASH=${TDESKTOP_API_HASH}
-    G_LOG_DOMAIN="Owpengram"
+    G_LOG_DOMAIN="OwpenGram"
 )
 
 get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
