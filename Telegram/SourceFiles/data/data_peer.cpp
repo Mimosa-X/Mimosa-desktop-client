@@ -38,7 +38,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "core/application.h"
 #include "core/click_handler_types.h"
 #include "window/window_session_controller.h"
-#include "window/main_window.h" // Window::LogoNoMargin.
 #include "ui/image/image.h"
 #include "ui/chat/chat_style.h"
 #include "ui/empty_userpic.h"
@@ -439,11 +438,6 @@ QImage *PeerData::userpicCloudImage(Ui::PeerUserpicView &view) const {
 	if (const auto image = view.cloud.get(); image && !image->isNull()) {
 		_userpicEmpty = nullptr;
 		return image;
-	} else if (isNotificationsUser()) {
-		static auto result = Window::LogoNoMargin().scaledToWidth(
-			kUserpicSize,
-			Qt::SmoothTransformation);
-		return &result;
 	}
 	return nullptr;
 }
