@@ -24,7 +24,7 @@
     <file alias="icons/settings/dino.svg">../../icons/settings/dino.svg</file>
     <file alias="icons/settings/star.svg">../../icons/settings/star.svg</file>
     <file alias="icons/settings/starmini.svg">../../icons/settings/starmini.svg</file>
-    <file alias="icons/tray/monochrome.svg">../../OwpenGram/icons/tray_monochrome.svg</file>
+    <file alias="icons/tray/monochrome.svg">../../OwpenGram/icons/plane_white.svg</file>
     <file alias="icons/tray/monochrome_attention.svg">../../OwpenGram/icons/tray_monochrome_attention.svg</file>
     <file alias="icons/tray/monochrome_mute.svg">../../OwpenGram/icons/tray_monochrome_mute.svg</file>
     <file alias="topic_icons/blue.svg">../../art/topic_icons/blue.svg</file>
