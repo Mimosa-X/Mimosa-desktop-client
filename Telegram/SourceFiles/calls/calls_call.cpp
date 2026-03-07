@@ -806,38 +806,38 @@ bool Call::handleUpdate(const MTPPhoneCall &call) {
 				)).send();
 			}
 		}
-		if (data.is_need_rating() && _id && _accessHash) {
-			const auto window = Core::App().windowFor(
-				::Window::SeparateId(_user));
-			const auto session = &_user->session();
-			const auto callId = _id;
-			const auto callAccessHash = _accessHash;
-			auto owned = Box<Ui::RateCallBox>(
-				Core::App().settings().sendSubmitWay());
-			const auto box = window
-				? window->show(std::move(owned))
-				: Ui::show(std::move(owned));
-			const auto sender = box->lifetime().make_state<MTP::Sender>(
-				&session->mtp());
-			box->sends(
-			) | rpl::take(
-				1 // Instead of keeping requestId.
-			) | rpl::on_next([=](const Ui::RateCallBox::Result &r) {
-				sender->request(MTPphone_SetCallRating(
-					MTP_flags(0),
-					MTP_inputPhoneCall(
-						MTP_long(callId),
-						MTP_long(callAccessHash)),
-					MTP_int(r.rating),
-					MTP_string(r.comment)
-				)).done([=](const MTPUpdates &updates) {
-					session->api().applyUpdates(updates);
-					box->closeBox();
-				}).fail([=] {
-					box->closeBox();
-				}).send();
-			}, box->lifetime());
-		}
+		// if (data.is_need_rating() && _id && _accessHash) {
+		// 	const auto window = Core::App().windowFor(
+		// 		::Window::SeparateId(_user));
+		// 	const auto session = &_user->session();
+		// 	const auto callId = _id;
+		// 	const auto callAccessHash = _accessHash;
+		// 	auto owned = Box<Ui::RateCallBox>(
+		// 		Core::App().settings().sendSubmitWay());
+		// 	const auto box = window
+		// 		? window->show(std::move(owned))
+		// 		: Ui::show(std::move(owned));
+		// 	const auto sender = box->lifetime().make_state<MTP::Sender>(
+		// 		&session->mtp());
+		// 	box->sends(
+		// 	) | rpl::take(
+		// 		1 // Instead of keeping requestId.
+		// 	) | rpl::on_next([=](const Ui::RateCallBox::Result &r) {
+		// 		sender->request(MTPphone_SetCallRating(
+		// 			MTP_flags(0),
+		// 			MTP_inputPhoneCall(
+		// 				MTP_long(callId),
+		// 				MTP_long(callAccessHash)),
+		// 			MTP_int(r.rating),
+		// 			MTP_string(r.comment)
+		// 		)).done([=](const MTPUpdates &updates) {
+		// 			session->api().applyUpdates(updates);
+		// 			box->closeBox();
+		// 		}).fail([=] {
+		// 			box->closeBox();
+		// 		}).send();
+		// 	}, box->lifetime());
+		// }
 		const auto reason = data.vreason();
 		if (reason
 			&& reason->type() == mtpc_phoneCallDiscardReasonDisconnect) {
