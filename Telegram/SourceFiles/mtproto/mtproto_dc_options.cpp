@@ -80,7 +80,7 @@ t6N/byY9Nw9p21Og3AoXSL2q/2IJ1WRUhebgAdGVMlV1fkuOQoEzR7EdpqtQD9Cs\n\
 -----END RSA PUBLIC KEY-----" };
 **/
 const BuiltInDc kBuiltInDcs[] = {
-    { 1, "192.168.100.10" , 10443 },
+    { 1, "XXX.XXX.XXX.XXX" , 10443 },
 };
 
 const BuiltInDc kBuiltInDcsTest[] = {
