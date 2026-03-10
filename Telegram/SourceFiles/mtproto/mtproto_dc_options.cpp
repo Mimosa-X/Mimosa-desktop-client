@@ -84,7 +84,7 @@ const BuiltInDc kBuiltInDcs[] = {
 };
 
 const BuiltInDc kBuiltInDcsTest[] = {
-    { 1, "192.168.100.10" , 10443 },
+    { 1, "XXX.XXX.XXX.XXX" , 10443 },
 };
 
 const char *kTestPublicRSAKeys[] = { "\
