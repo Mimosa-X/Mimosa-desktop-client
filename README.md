@@ -2,6 +2,11 @@
 
 **Desktop client for OwpenGram server - Telegram-compatible messaging.**
 
+<img width="440" height="707" alt="image" src="https://github.com/user-attachments/assets/6a0cdaa7-15d7-4b71-9c6c-771de61a7b46" />
+<img width="440" height="707" alt="image" src="https://github.com/user-attachments/assets/7d615ed3-3dc8-474a-a420-17544245a170" />
+<img width="884" height="707" alt="image" src="https://github.com/user-attachments/assets/01b9ecaa-67ee-4600-9be0-9f08dfa64033" />
+
+
 ---
 
 ## ✨ What is OwpenGram Desktop?
