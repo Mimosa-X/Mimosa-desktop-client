@@ -159,22 +159,9 @@ void SignupWidget::submit() {
 	if (_sentRequest) {
 		return;
 	}
-	if (_invertOrder) {
-		if ((_last->hasFocus() || _last->getLastText().trimmed().length()) && !_first->getLastText().trimmed().length()) {
-			_first->setFocus();
-			return;
-		} else if (!_last->getLastText().trimmed().length()) {
-			_last->setFocus();
-			return;
-		}
-	} else {
-		if ((_first->hasFocus() || _first->getLastText().trimmed().length()) && !_last->getLastText().trimmed().length()) {
-			_last->setFocus();
-			return;
-		} else if (!_first->getLastText().trimmed().length()) {
-			_first->setFocus();
-			return;
-		}
+	if (!_first->getLastText().trimmed().length()) {
+		_first->setFocus();
+		return;
 	}
 
 	const auto send = [&] {
