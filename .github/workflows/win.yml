@@ -1,12 +1,13 @@
+# .github/workflows/win.yml
+
 name: Windows.
 
 on:
+  workflow_dispatch:
   push:
-    workflow_dispatch:
     paths-ignore:
       - 'docs/**'
       - '**.md'
-      - '!docs/building-win*.md'
       - 'changelog.txt'
       - 'LEGAL'
       - 'LICENSE'
@@ -25,7 +26,6 @@ on:
     paths-ignore:
       - 'docs/**'
       - '**.md'
-      - '!docs/building-win*.md'
       - 'changelog.txt'
       - 'LEGAL'
       - 'LICENSE'
@@ -45,16 +45,13 @@ jobs:
 
   windows:
     name: Windows
-    runs-on: ${{ matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-latest' }}
+    runs-on: windows-latest
 
     strategy:
+      fail-fast: false #忽略其他架构构建错误，继续构建其他架构
       matrix:
-        arch: [x64_x86, x64, arm64]
-        qt: ["", qt6]
+        arch: [Win32, x64]
         generator: ["", "Ninja Multi-Config"]
-        exclude:
-          - arch: arm64
-            qt: ""
 
     env:
       UPLOAD_ARTIFACT: "true"
@@ -71,41 +68,30 @@ jobs:
           mkdir %userprofile%\TBuild\Libraries
           mklink /d %GITHUB_WORKSPACE%\TBuild %userprofile%\TBuild
           echo TBUILD=%GITHUB_WORKSPACE%\TBuild>>%GITHUB_ENV%
-          echo LibrariesPath=%GITHUB_WORKSPACE%\TBuild\Libraries${{ matrix.arch == 'x64' && '\win64' || '' }}>>%GITHUB_ENV%
 
       - name: Get repository name.
         shell: bash
         run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
 
-      - name: Clone.
-        uses: actions/checkout@v6
-        with:
-          submodules: recursive
-          path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}
-
-      - name: First set up.
-        shell: bash
-        run: |
-          DOCPATH=$TBUILD/$REPO_NAME/docs/building-win.md
-          [ "${{ matrix.arch }}" = x64 ] && DOCPATH=$TBUILD/$REPO_NAME/docs/building-win-x64.md
-          SDK="$(grep "SDK version" $DOCPATH | sed -r 's/.*\*\*(.*)\*\* SDK version.*/\1/')"
-          echo "SDK=$SDK" >> $GITHUB_ENV
-
-          sed -i '/CMAKE_${lang}_FLAGS_DEBUG_INIT/s/${_Zi}//' "$PROGRAMFILES"/CMake/share/cmake*/Modules/Platform/Windows-MSVC.cmake
-
-          echo "$(sha256sum $TBUILD/$REPO_NAME/$PREPARE_PATH | awk '{ print $1 }')" >> CACHE_KEY.txt
-          echo "$SDK" >> CACHE_KEY.txt
-          echo "CACHE_KEY=$(sha256sum CACHE_KEY.txt | awk '{ print $1 }')" >> $GITHUB_ENV
-
-          echo "Configurate git for cherry-picks."
-          git config --global user.email "you@example.com"
-          git config --global user.name "Sample"
-
       - uses: ilammy/msvc-dev-cmd@v1.13.0
         name: Native Tools Command Prompt.
         with:
           arch: ${{ matrix.arch }}
-          sdk: ${{ env.SDK }}
+
+      - name: Clone.
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}
+
+      - name: Set up environment paths.
+        shell: bash
+        run: |
+          echo "CACHE_KEY=$(sha256sum $TBUILD/$REPO_NAME/$PREPARE_PATH | awk '{ print $1 }')" >> $GITHUB_ENV
+
+          echo "Configurate git for cherry-picks."
+          git config --global user.email "you@example.com"
+          git config --global user.name "Sample"
 
       - name: NuGet sources.
         run: |
@@ -114,41 +100,27 @@ jobs:
 
       - name: ThirdParty cache.
         id: cache-third-party
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: ${{ env.TBUILD }}\ThirdParty
-          key: ${{ runner.OS }}-${{ runner.arch }}-third-party-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-${{ runner.arch }}-third-party-
+          key: ${{ runner.OS }}-${{ matrix.arch }}-third-party-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-${{ matrix.arch }}-third-party-
 
       - name: Libraries cache.
         id: cache-libs
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
-          path: |
-            ${{ env.LibrariesPath }}\*
-            !${{ env.LibrariesPath }}\cache_keys
-            !${{ env.LibrariesPath }}\[qQ]t[_-]*
-            ${{ env.LibrariesPath }}\cache_keys\*
-            !${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
+          path: ${{ env.TBUILD }}\Libraries
           key: ${{ runner.OS }}-${{ matrix.arch }}-libs-${{ env.CACHE_KEY }}
           restore-keys: ${{ runner.OS }}-${{ matrix.arch }}-libs-
-
-      - name: Qt cache.
-        id: cache-qt
-        uses: actions/cache@v5
-        with:
-          path: |
-            ${{ env.LibrariesPath }}\[qQ]t[_-]*
-            ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: ${{ runner.OS }}-${{ matrix.arch }}-${{ matrix.qt || 'qt' }}-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-${{ matrix.arch }}-${{ matrix.qt || 'qt' }}-
 
       - name: Libraries.
         env:
           GYP_MSVS_OVERRIDE_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\'
           GYP_MSVS_VERSION: 2022
         run: |
-          %TBUILD%\%REPO_NAME%\Telegram\build\prepare\win.bat skip-release silent ${{ matrix.qt }}
+          cd %TBUILD%
+          %REPO_NAME%\Telegram\build\prepare\win.bat skip-release silent
 
       - name: Read configuration matrix.
         shell: bash
@@ -158,23 +130,18 @@ jobs:
           ARCH=""
           if [ -n "${{ matrix.arch }}" ]; then
             case "${{ matrix.arch }}" in
-              x64_x86) ARCH="x86";;
-              arm64) ARCH="arm";;
+              Win32) ARCH="x86";;
               *) ARCH="${{ matrix.arch }}";;
             esac
             echo "Architecture from matrix: $ARCH"
-            ARTIFACT_NAME="${ARTIFACT_NAME} ${{ matrix.arch }}"
-          fi
-
-          if [ -n "${{ matrix.qt }}" ]; then
-            ARTIFACT_NAME="${ARTIFACT_NAME} ${{ matrix.qt }}"
+            ARTIFACT_NAME="${ARTIFACT_NAME}_${{ matrix.arch }}"
           fi
 
           GENERATOR=""
           if [ -n "${{ matrix.generator }}" ]; then
             GENERATOR="-G \"${{ matrix.generator }}\""
             echo "Generator from matrix: $GENERATOR"
-            ARTIFACT_NAME="${ARTIFACT_NAME} ${{ matrix.generator }}"
+            ARTIFACT_NAME="${ARTIFACT_NAME}_${{ matrix.generator }}"
           fi
           echo "TDESKTOP_BUILD_GENERATOR=$GENERATOR" >> $GITHUB_ENV
 
@@ -185,7 +152,7 @@ jobs:
           if [ -n "${{ matrix.defines }}" ]; then
             DEFINE="-D ${{ matrix.defines }}=ON"
             echo "Define from matrix: $DEFINE"
-            ARTIFACT_NAME="${ARTIFACT_NAME} ${{ matrix.defines }}"
+            ARTIFACT_NAME="${ARTIFACT_NAME}_${{ matrix.defines }}"
           fi
           echo "TDESKTOP_BUILD_DEFINE=$DEFINE" >> $GITHUB_ENV
 
@@ -199,8 +166,51 @@ jobs:
           echo "TDESKTOP_BUILD_API=$API" >> $GITHUB_ENV
 
       - name: Free up some disk space.
-        shell: bash
-        run: find $LibrariesPath '(' '(' ! '(' -name '*.lib' -o -name '*.a' -o -name '*.exe' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' ')' -type f ')' -o -empty ')' -delete
+        run: |
+          cd %TBUILD%
+          del /S Libraries\*.pdb
+          del /S Libraries\*.pch
+          del /S Libraries\*.obj
+
+      # --- START OF THE FINALLY CORRECTED PATCH STEP ---
+      - name: Patch cmake/options_win.cmake for WinRT fix
+        shell: bash # 使用 bash shell 来执行 sed 命令
+        run: |
+          # 构造外部 submodule 'cmake' 目录的完整路径，它在仓库的根目录
+          CMAKE_SUBMODULE_DIR="$TBUILD/$REPO_NAME/cmake"
+          PATCH_TARGET_FILE="options_win.cmake" # 我们确定要修改的文件名
+          FULL_PATCH_FILE_PATH="$CMAKE_SUBMODULE_DIR/$PATCH_TARGET_FILE"
+          
+          echo "Current working directory before patch attempt: $(pwd)"
+          echo "Attempting to change current working directory to: $CMAKE_SUBMODULE_DIR"
+          
+          # 尝试进入目标目录
+          cd "$CMAKE_SUBMODULE_DIR" || { echo "ERROR: Could not change directory to $CMAKE_SUBMODULE_DIR. Is the 'cmake' submodule cloned correctly at the repository root? Exiting."; exit 1; }
+          
+          echo "Successfully changed current working directory to: $(pwd)"
+          
+          # 验证 options_win.cmake 文件是否存在于当前目录
+          echo "Verifying $PATCH_TARGET_FILE existence in current directory:"
+          if [ ! -f "$PATCH_TARGET_FILE" ]; then
+            echo "ERROR: $PATCH_TARGET_FILE not found in $(pwd)."
+            echo "This indicates that the external 'cmake' submodule does not contain this file, or it's misnamed."
+            # 为了更全面的调试，列出整个子模块的内容
+            echo "--- Listing contents of the external cmake submodule (current directory) ---"
+            ls -RF . || true # ls -RF . 会在当前目录执行，如果失败也不中断
+            echo "----------------------------------------------------------------------------"
+            exit 1
+          fi
+          echo "$PATCH_TARGET_FILE found. Proceeding with patch."
+
+          # 应用补丁：在 'Bcrypt' 所在行之后插入 runtimeobject.lib 和 windowsapp.lib
+          # 现在 sed 可以直接对相对路径 'options_win.cmake' 操作
+          sed -i '/Bcrypt/a \    runtimeobject.lib\n\    windowsapp.lib' "$PATCH_TARGET_FILE"
+          
+          # 【可选】为了调试目的，打印修改后的文件内容以确认补丁是否生效
+          echo "--- Patched $PATCH_TARGET_FILE content ---"
+          cat "$PATCH_TARGET_FILE"
+          echo "----------------------------------------------"
+      # --- END OF THE FINALLY CORRECTED PATCH STEP ---
 
       - name: Telegram Desktop build.
         if: env.ONLY_CACHE == 'false'
@@ -210,13 +220,12 @@ jobs:
           call configure.bat ^
           %TDESKTOP_BUILD_GENERATOR% ^
           %TDESKTOP_BUILD_ARCH% ^
-          ${{ matrix.qt }} ^
           %TDESKTOP_BUILD_API% ^
-          -D CMAKE_CONFIGURATION_TYPES=Debug ^
-          -D CMAKE_COMPILE_WARNING_AS_ERROR=ON ^
-          -D CMAKE_MSVC_DEBUG_INFORMATION_FORMAT= ^
+          -D CMAKE_C_FLAGS="/WX" ^
+          -D CMAKE_CXX_FLAGS="/WX" ^
           -D DESKTOP_APP_DISABLE_AUTOUPDATE=OFF ^
           -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF ^
+          -D DESKTOP_APP_NO_PDB=ON ^
           %TDESKTOP_BUILD_DEFINE%
 
           cmake --build ..\out --config Debug --parallel
@@ -226,9 +235,10 @@ jobs:
         run: |
           set OUT=%TBUILD%\%REPO_NAME%\out\Debug
           mkdir artifact
-          move %OUT%\Telegram.exe artifact/
+          move %OUT%\Teamgram.exe artifact/
           move %OUT%\Updater.exe artifact/
-      - uses: actions/upload-artifact@v6
+          
+      - uses: actions/upload-artifact@v4
         name: Upload artifact.
         if: (env.UPLOAD_ARTIFACT == 'true') || (github.ref == 'refs/heads/nightly')
         with:
