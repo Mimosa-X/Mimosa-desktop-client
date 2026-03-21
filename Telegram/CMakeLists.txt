@@ -2128,7 +2128,7 @@ endif()
 target_prepare_qrc(Telegram)
 
 if (NOT DESKTOP_APP_DISABLE_AUTOUPDATE AND NOT build_macstore AND NOT build_winstore)
-    find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+    find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
 
     add_executable(Updater WIN32)
     init_non_host_target(Updater)
@@ -2159,9 +2159,9 @@ if (NOT DESKTOP_APP_DISABLE_AUTOUPDATE AND NOT build_macstore AND NOT build_wins
           ${src_loc}
         )
         target_link_libraries(Updater PRIVATE
-          Qt6::Core
-          Qt6::Gui
-          Qt6::Widgets
+          Qt5::Core
+          Qt5::Gui
+          Qt5::Widgets
         )
         if (MSVC)
             target_link_libraries(Updater
