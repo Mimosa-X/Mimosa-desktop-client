@@ -2128,6 +2128,8 @@ endif()
 target_prepare_qrc(Telegram)
 
 if (NOT DESKTOP_APP_DISABLE_AUTOUPDATE AND NOT build_macstore AND NOT build_winstore)
+    find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+
     add_executable(Updater WIN32)
     init_non_host_target(Updater)
 
