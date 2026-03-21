@@ -2163,6 +2163,9 @@ if (NOT DESKTOP_APP_DISABLE_AUTOUPDATE AND NOT build_macstore AND NOT build_wins
           Qt5::Gui
           Qt5::Widgets
         )
+        target_compile_definitions(Updater PRIVATE
+         _CRT_SECURE_NO_WARNINGS
+        )
         if (MSVC)
             target_link_libraries(Updater
             PRIVATE
