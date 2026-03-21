@@ -2159,6 +2159,7 @@ if (NOT DESKTOP_APP_DISABLE_AUTOUPDATE AND NOT build_macstore AND NOT build_wins
         target_link_libraries(Updater PRIVATE
           Qt6::Core
           Qt6::Gui
+          Qt6::Widgets
         )
         if (MSVC)
             target_link_libraries(Updater
