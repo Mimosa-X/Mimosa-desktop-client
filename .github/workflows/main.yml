@@ -48,7 +48,7 @@ jobs:
       UPLOAD_ARTIFACT: "true"
       ONLY_CACHE: "false"
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
-      TDESKTOP_BUILD_GENERATOR: -G "Ninja"
+      
 
     defaults:
       run:
@@ -108,7 +108,7 @@ jobs:
           GYP_MSVS_VERSION: 2022
         run: |
           cd %TBUILD%
-          %REPO_NAME%\Telegram\build\prepare\win.bat full silent
+          %REPO_NAME%\Telegram\build\prepare\win.bat skip-release silent
 
       - name: Set build config.
         shell: bash
