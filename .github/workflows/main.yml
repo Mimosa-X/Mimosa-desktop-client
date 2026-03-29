@@ -6,38 +6,7 @@ on:
     paths-ignore:
       - 'docs/**'
       - '**.md'
-      - 'changelog.txt'
-      - 'LEGAL'
-      - 'LICENSE'
       - '.github/**'
-      - '!.github/workflows/win.yml'
-      - 'lib/xdg/**'
-      - 'snap/**'
-      - 'Telegram/build/docker/**'
-      - 'Telegram/Resources/uwp/**'
-      - 'Telegram/SourceFiles/platform/linux/**'
-      - 'Telegram/SourceFiles/platform/mac/**'
-      - 'Telegram/Telegram/**'
-      - 'Telegram/configure.sh'
-      - 'Telegram/Telegram.plist'
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - '**.md'
-      - 'changelog.txt'
-      - 'LEGAL'
-      - 'LICENSE'
-      - '.github/**'
-      - '!.github/workflows/win.yml'
-      - 'lib/xdg/**'
-      - 'snap/**'
-      - 'Telegram/build/docker/**'
-      - 'Telegram/Resources/uwp/**'
-      - 'Telegram/SourceFiles/platform/linux/**'
-      - 'Telegram/SourceFiles/platform/mac/**'
-      - 'Telegram/Telegram/**'
-      - 'Telegram/configure.sh'
-      - 'Telegram/Telegram.plist'
 
 jobs:
   windows:
@@ -49,7 +18,6 @@ jobs:
       ONLY_CACHE: "false"
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
       
-
     defaults:
       run:
         shell: cmd
@@ -92,15 +60,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.TBUILD }}\ThirdParty
-          key: ${{ runner.OS }}-x64-third-party-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-x64-third-party-
+          key: ${{ runner.OS }}-x64-third-party-release-v1-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-x64-third-party-release-v1-
 
       - name: Cache Libraries.
         uses: actions/cache@v4
         with:
           path: ${{ env.TBUILD }}\Libraries
-          key: ${{ runner.OS }}-x64-libs-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-x64-libs-
+          key: ${{ runner.OS }}-x64-libs-release-v1-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-x64-libs-release-v1-
 
       - name: Prepare Libraries.
         env:
@@ -108,7 +76,7 @@ jobs:
           GYP_MSVS_VERSION: 2022
         run: |
           cd %TBUILD%
-          %REPO_NAME%\Telegram\build\prepare\win.bat skip-release silent
+          %REPO_NAME%\Telegram\build\prepare\win.bat skip-debug silent
 
       - name: Set build config.
         shell: bash
@@ -133,7 +101,6 @@ jobs:
         if: env.ONLY_CACHE == 'false'
         run: |
           cd %TBUILD%\%REPO_NAME%\Telegram
-
           call configure.bat ^
           %TDESKTOP_BUILD_GENERATOR% ^
           %TDESKTOP_BUILD_API% ^
@@ -141,15 +108,19 @@ jobs:
           -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON ^
           -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF ^
           -D DESKTOP_APP_NO_PDB=ON
-
           cmake --build ..\out --config Release --parallel 2
 
       - name: Move artifact.
         if: env.UPLOAD_ARTIFACT == 'true'
         run: |
-          set OUT=%TBUILD%\%REPO_NAME%\out\Release
+          set OUT_DIR=%TBUILD%\%REPO_NAME%\out\Release
           mkdir artifact
-          move %OUT%\Teamgram.exe artifact/
+          if exist "%OUT_DIR%\*.exe" (
+              copy "%OUT_DIR%\*.exe" artifact\
+          ) else (
+              echo "Error: No executable found in %OUT_DIR%"
+              exit 1
+          )
 
       - name: Upload artifact.
         uses: actions/upload-artifact@v4
