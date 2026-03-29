@@ -51,24 +51,20 @@ jobs:
           git config --global user.email "you@example.com"
           git config --global user.name "builder"
 
-      - name: NuGet setup.
-        run: |
-          nuget sources Disable -Name "Microsoft Visual Studio Offline Packages"
-          nuget sources Add -Source https://api.nuget.org/v3/index.json & exit 0
-
       - name: Cache ThirdParty.
         uses: actions/cache@v4
         with:
           path: ${{ env.TBUILD }}\ThirdParty
-          key: ${{ runner.OS }}-x64-third-party-release-v1-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-x64-third-party-release-v1-
+          # 再次更新 Key 名（v2），确保清理掉之前报错的残留环境
+          key: ${{ runner.OS }}-x64-third-party-v2-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-x64-third-party-v2-
 
       - name: Cache Libraries.
         uses: actions/cache@v4
         with:
           path: ${{ env.TBUILD }}\Libraries
-          key: ${{ runner.OS }}-x64-libs-release-v1-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-x64-libs-release-v1-
+          key: ${{ runner.OS }}-x64-libs-v2-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-x64-libs-v2-
 
       - name: Prepare Libraries.
         env:
@@ -76,17 +72,14 @@ jobs:
           GYP_MSVS_VERSION: 2022
         run: |
           cd %TBUILD%
-          %REPO_NAME%\Telegram\build\prepare\win.bat skip-debug silent
+          :: 移除无效的 skip-debug 参数
+          call %REPO_NAME%\Telegram\build\prepare\win.bat silent
 
-      - name: Set build config.
-        shell: bash
-        run: |
-          echo "ARTIFACT_NAME=Telegram_x64_Release" >> $GITHUB_ENV
-          echo "TDESKTOP_BUILD_API=-D TDESKTOP_API_TEST=ON" >> $GITHUB_ENV
-
-      - name: Free disk space.
+      - name: Free disk space (Post-Prepare).
         run: |
           cd %TBUILD%
+          :: 彻底清理掉 Debug 相关的库文件以腾出空间给 Release 编译
+          if exist Libraries\Debug rmdir /s /q Libraries\Debug
           del /S Libraries\*.pdb
           del /S Libraries\*.pch
           del /S Libraries\*.obj
@@ -101,13 +94,14 @@ jobs:
         if: env.ONLY_CACHE == 'false'
         run: |
           cd %TBUILD%\%REPO_NAME%\Telegram
+          
+          :: 明确指定生成器和 Release 模式
           call configure.bat ^
-          %TDESKTOP_BUILD_GENERATOR% ^
-          %TDESKTOP_BUILD_API% ^
           -D CMAKE_BUILD_TYPE=Release ^
           -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON ^
           -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF ^
           -D DESKTOP_APP_NO_PDB=ON
+
           cmake --build ..\out --config Release --parallel 2
 
       - name: Move artifact.
@@ -119,6 +113,7 @@ jobs:
               copy "%OUT_DIR%\*.exe" artifact\
           ) else (
               echo "Error: No executable found in %OUT_DIR%"
+              dir /s %TBUILD%\%REPO_NAME%\out
               exit 1
           )
 
