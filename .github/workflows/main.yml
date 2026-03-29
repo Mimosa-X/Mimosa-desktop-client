@@ -17,12 +17,15 @@ jobs:
       UPLOAD_ARTIFACT: "true"
       ONLY_CACHE: "false"
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
-      
+
     defaults:
       run:
         shell: cmd
 
     steps:
+      # ---------------------------
+      # 准备目录
+      # ---------------------------
       - name: Prepare directories.
         run: |
           mkdir %userprofile%\TBuild\Libraries
@@ -44,66 +47,89 @@ jobs:
           submodules: recursive
           path: ${{ env.TBUILD }}\${{ env.REPO_NAME }}
 
-      - name: Set environment.
+      - name: Set git environment.
         shell: bash
         run: |
           echo "CACHE_KEY=$(sha256sum $TBUILD/$REPO_NAME/$PREPARE_PATH | awk '{ print $1 }')" >> $GITHUB_ENV
           git config --global user.email "you@example.com"
           git config --global user.name "builder"
 
+      # ---------------------------
+      # 缓存 Qt 和 ThirdParty
+      # ---------------------------
       - name: Cache ThirdParty.
         uses: actions/cache@v4
         with:
           path: ${{ env.TBUILD }}\ThirdParty
-          # 再次更新 Key 名（v2），确保清理掉之前报错的残留环境
-          key: ${{ runner.OS }}-x64-third-party-v2-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-x64-third-party-v2-
+          key: ${{ runner.OS }}-x64-third-party-v3-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-x64-third-party-v3-
 
       - name: Cache Libraries.
         uses: actions/cache@v4
         with:
           path: ${{ env.TBUILD }}\Libraries
-          key: ${{ runner.OS }}-x64-libs-v2-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-x64-libs-v2-
+          key: ${{ runner.OS }}-x64-libs-v3-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-x64-libs-v3-
 
+      # ---------------------------
+      # 运行官方 prepare
+      # ---------------------------
       - name: Prepare Libraries.
         env:
           GYP_MSVS_OVERRIDE_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\'
           GYP_MSVS_VERSION: 2022
         run: |
           cd %TBUILD%
-          :: 移除无效的 skip-debug 参数
           call %REPO_NAME%\Telegram\build\prepare\win.bat silent
+          if %errorlevel% neq 0 exit /b %errorlevel%
 
+      # ---------------------------
+      # 检查 Qt 是否存在
+      # ---------------------------
+      - name: Check Qt
+        run: |
+          dir %TBUILD%\Libraries\qt
+          if not exist %TBUILD%\Libraries\qt exit /b 1
+
+      # ---------------------------
+      # 清理 Debug 文件（保留 Qt）
+      # ---------------------------
       - name: Free disk space (Post-Prepare).
         run: |
           cd %TBUILD%
-          :: 彻底清理掉 Debug 相关的库文件以腾出空间给 Release 编译
           if exist Libraries\Debug rmdir /s /q Libraries\Debug
           del /S Libraries\*.pdb
-          del /S Libraries\*.pch
-          del /S Libraries\*.obj
 
+      # ---------------------------
+      # Patch CMake
+      # ---------------------------
       - name: Patch cmake
         shell: bash
         run: |
           cd "$TBUILD/$REPO_NAME/cmake"
           sed -i '/Bcrypt/a \    runtimeobject.lib\n\    windowsapp.lib' options_win.cmake
 
+      # ---------------------------
+      # 构建 Telegram Desktop (并行加速)
+      # ---------------------------
       - name: Build Telegram Desktop (Release)
         if: env.ONLY_CACHE == 'false'
         run: |
           cd %TBUILD%\%REPO_NAME%\Telegram
-          
-          :: 明确指定生成器和 Release 模式
           call configure.bat ^
-          -D CMAKE_BUILD_TYPE=Release ^
-          -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON ^
-          -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF ^
-          -D DESKTOP_APP_NO_PDB=ON
+            -D CMAKE_PREFIX_PATH=%TBUILD%\Libraries\qt ^
+            -D CMAKE_BUILD_TYPE=Release ^
+            -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON ^
+            -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF ^
+            -D DESKTOP_APP_NO_PDB=ON
 
-          cmake --build ..\out --config Release --parallel 2
+          :: 并行构建：根据 CPU 核数加速
+          for /F "tokens=2 delims==" %%a in ('wmic cpu get NumberOfLogicalProcessors /value ^| find "="') do set CPU_CORES=%%a
+          cmake --build ..\out --config Release --parallel %CPU_CORES%
 
+      # ---------------------------
+      # 打包产物
+      # ---------------------------
       - name: Move artifact.
         if: env.UPLOAD_ARTIFACT == 'true'
         run: |
