@@ -2128,8 +2128,6 @@ endif()
 target_prepare_qrc(Telegram)
 
 if (NOT DESKTOP_APP_DISABLE_AUTOUPDATE AND NOT build_macstore AND NOT build_winstore)
-    find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
-
     add_executable(Updater WIN32)
     init_non_host_target(Updater)
 
@@ -2154,16 +2152,7 @@ if (NOT DESKTOP_APP_DISABLE_AUTOUPDATE AND NOT build_macstore AND NOT build_wins
             base/platform/win/base_windows_safe_library.cpp
             base/platform/win/base_windows_safe_library.h
         )
-        target_include_directories(Updater PRIVATE
-          ${lib_base_loc}
-          ${src_loc}
-        )
-        target_link_libraries(Updater PRIVATE
-          Qt5::Core
-        )
-        target_compile_definitions(Updater PRIVATE
-         _CRT_SECURE_NO_WARNINGS
-        )
+        target_include_directories(Updater PRIVATE ${lib_base_loc})
         if (MSVC)
             target_link_libraries(Updater
             PRIVATE
