@@ -11,10 +11,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 namespace Branding {
 
-constexpr auto AppName = "OwpenGram Desktop"_cs;
-constexpr auto ShortAppName = "OwpenGram"_cs;
-constexpr auto ApplicationName = "OwpengramDesktop"_cs;
-constexpr auto CompanyName = "OwpenGram"_cs;
+constexpr auto AppName = "Mimosa Desktop"_cs;
+constexpr auto ShortAppName = "Mimosa"_cs;
+constexpr auto ApplicationName = "MimosaDesktop"_cs;
+constexpr auto CompanyName = "Mimosa"_cs;
 
 constexpr auto WindowsIconPath = "Resources/OwpenGram/art/icon256.ico"_cs;
 constexpr auto MacOSIconName = "Icon.icns"_cs;
@@ -30,6 +30,6 @@ constexpr auto TrayMonochromePath = ":/gui/icons/tray/monochrome.svg"_cs;
 constexpr auto TrayMonochromeAttentionPath = ":/gui/icons/tray/monochrome_attention.svg"_cs;
 constexpr auto TrayMonochromeMutePath = ":/gui/icons/tray/monochrome_mute.svg"_cs;
 
-constexpr auto BundleIdentifier = "org.owpengram.desktop"_cs;
+constexpr auto BundleIdentifier = "org.Mimosa.desktop"_cs;
 
 } // namespace Branding

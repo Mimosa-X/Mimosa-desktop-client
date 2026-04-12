@@ -61,11 +61,11 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             // NOTE: These values should match Branding::CompanyName and Branding::AppName in core/branding.h
-            VALUE "CompanyName", "OwpenGram"
-            VALUE "FileDescription", "OwpenGram Desktop"
+            VALUE "CompanyName", "Mimosa"
+            VALUE "FileDescription", "Mimosa Desktop"
             VALUE "FileVersion", "6.5.1.0"
             VALUE "LegalCopyright", "Copyright (C) 2014-2026"
-            VALUE "ProductName", "OwpenGram Desktop"
+            VALUE "ProductName", "Mimosa Desktop"
             VALUE "ProductVersion", "6.5.1.0"
         END
     END
