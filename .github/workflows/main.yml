@@ -2,12 +2,7 @@ name: Windows
 
 on:
   workflow_dispatch:
-  push:
-    paths-ignore:
-      - 'docs/**'
-      - '**.md'
-      - '.github/**'
-
+ 
 jobs:
   windows:
     name: Windows x64 Release
