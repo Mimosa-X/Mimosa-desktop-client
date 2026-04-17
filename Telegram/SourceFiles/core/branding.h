@@ -16,9 +16,9 @@ constexpr auto ShortAppName = "Mimosa"_cs;
 constexpr auto ApplicationName = "MimosaDesktop"_cs;
 constexpr auto CompanyName = "Mimosa"_cs;
 
-constexpr auto WindowsIconPath = "Resources/OwpenGram/art/icon256.ico"_cs;
+constexpr auto WindowsIconPath = "Resources/Mimosa/art/icon256.ico"_cs;
 constexpr auto MacOSIconName = "Icon.icns"_cs;
-constexpr auto LinuxIconBase = "Resources/OwpenGram/art/icon"_cs;
+constexpr auto LinuxIconBase = "Resources/Mimosa/art/icon"_cs;
 
 constexpr auto LogoPath = ":/gui/art/logo_256.png"_cs;
 constexpr auto LogoNoMarginPath = ":/gui/art/logo_256_no_margin.png"_cs;
